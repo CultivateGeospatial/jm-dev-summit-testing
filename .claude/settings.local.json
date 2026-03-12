@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell -Command \"cd ''c:/Projects/arcgis5test \\(Claude\\)''; npx vite build 2>&1 | Select-Object -First 40\")",
+      "Bash(powershell -Command \"Get-Content ''c:/Projects/arcgis5test \\(Claude\\)/node_modules/@arcgis/map-components-react/dist/index.js'' | Select-Object -First 30\")",
+      "Bash(powershell -Command \"Get-ChildItem ''c:/Projects/arcgis5test \\(Claude\\)/node_modules/@arcgis/map-components/dist'' | Select-Object Name | Select-Object -First 20\")"
+    ]
+  }
+}

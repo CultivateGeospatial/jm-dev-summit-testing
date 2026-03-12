@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell -Command \"Select-String -Pattern ''^import|^const c|^let c|^ c ='' ''c:/Projects/arcgis5test \\(Claude\\)/node_modules/@arcgis/map-components/dist/components/arcgis-map/customElement.js'' | Select-Object -First 5\")",
+      "Bash(powershell -Command \"cd ''c:/Projects/arcgis5test \\(Claude\\)''; npx tsc --noEmit 2>&1\")"
+    ]
+  }
+}

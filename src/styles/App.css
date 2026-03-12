@@ -1,0 +1,213 @@
+/* ============================================================
+   Reset & base
+   ============================================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Calcite Shell fills the viewport */
+calcite-shell {
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ============================================================
+   Map fills the center content area of Calcite Shell
+   ============================================================ */
+arcgis-map {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ============================================================
+   Header
+   ============================================================ */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ============================================================
+   Bottom panel
+   ============================================================ */
+calcite-shell-panel[slot="panel-bottom"] {
+  --calcite-shell-panel-height: 300px;
+}
+
+.bottom-widget {
+  display: block;
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  min-height: 0;
+}
+
+.selection-toolbar {
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+  flex-wrap: wrap;
+}
+
+.table-toolbar {
+  padding: 6px 8px;
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--calcite-color-border-3, #e0e0e0);
+}
+
+/* ============================================================
+   Elevation panel
+   ============================================================ */
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.elevation-content {
+  gap: 0;
+}
+
+.elevation-route-picker {
+  padding: 6px 12px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--calcite-color-border-3, #e0e0e0);
+}
+
+.elevation-status {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--calcite-color-text-3, #555);
+  background: var(--calcite-color-foreground-2, #f9f9f9);
+  border-bottom: 1px solid var(--calcite-color-border-3, #e0e0e0);
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   Sign-in modal (shown before Calcite Shell)
+   ============================================================ */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9000;
+  backdrop-filter: blur(2px);
+}
+
+.modal-container {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  min-width: 480px;
+  max-width: 540px;
+  width: 90vw;
+  padding: 0;
+  overflow: hidden;
+}
+
+.modal-header {
+  background: #0079c1;
+  color: #fff;
+  padding: 24px 32px 20px;
+}
+
+.modal-header h2 {
+  margin: 0 0 4px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.modal-subtitle {
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.modal-form {
+  padding: 28px 32px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+}
+
+.form-field input {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.form-field input:focus {
+  border-color: #0079c1;
+  box-shadow: 0 0 0 3px rgba(0, 121, 193, 0.15);
+}
+
+.form-field input:disabled {
+  background: #f5f5f5;
+  color: #999;
+}
+
+.form-error {
+  padding: 10px 14px;
+  background: #fff2f2;
+  border: 1px solid #f5c6c6;
+  border-radius: 4px;
+  color: #c00;
+  font-size: 13px;
+}
+
+.btn-primary {
+  padding: 11px 20px;
+  background: #0079c1;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-top: 4px;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #005e99;
+}
+
+.btn-primary:disabled {
+  background: #93c0e0;
+  cursor: not-allowed;
+}
