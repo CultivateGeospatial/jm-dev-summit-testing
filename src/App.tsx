@@ -91,8 +91,12 @@ const App: React.FC = () => {
         url: "https://sampleserver6.arcgisonline.com/arcgis/rest/services/SF311/FeatureServer/0",
         title: "SF 311 Incidents",
       });
+      const trails = new FeatureLayer({
+        url: "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/Trails/FeatureServer/0",
+        title: "Trails (Elevation Demo)",
+      });
 
-      const allLayers: (FeatureLayer | GraphicsLayer)[] = [selectionLayer, drawLayer, wildfirePoints, wildfireLines, wildfirePolygons, sf311];
+      const allLayers: (FeatureLayer | GraphicsLayer)[] = [selectionLayer, drawLayer, wildfirePoints, wildfireLines, wildfirePolygons, sf311, trails];
 
       // AIMS layer only when signed in with credentials
       let layer: FeatureLayer;
@@ -104,7 +108,7 @@ const App: React.FC = () => {
         layer = sf311;
       }
 
-      const featureLayers = [wildfirePoints, wildfireLines, wildfirePolygons, sf311, ...(isSignedIn ? [layer] : [])];
+      const featureLayers = [wildfirePoints, wildfireLines, wildfirePolygons, sf311, trails, ...(isSignedIn ? [layer] : [])];
 
       view.map.addMany(allLayers);
       drawLayerRef.current = drawLayer;
@@ -112,8 +116,15 @@ const App: React.FC = () => {
       setFeatureLayer(layer);
       setAllFeatureLayers(featureLayers);
 
+      // Register all feature layers as selection sources so selectionManager.replace() works
+      featureLayers.forEach((fl) => {
+        fl.when(() => {
+          view.selectionManager.sources.add(fl);
+        });
+      });
+
       // ── Create bookmarks from layer extents ──
-      const bookmarkLayers = [wildfirePoints, wildfireLines, wildfirePolygons, sf311, ...(isSignedIn ? [layer] : [])];
+      const bookmarkLayers = [wildfirePoints, wildfireLines, wildfirePolygons, sf311, trails, ...(isSignedIn ? [layer] : [])];
       Promise.all(
         bookmarkLayers.map((l) =>
           l.when().then(() => l.queryExtent()).then((result) => ({
@@ -147,18 +158,20 @@ const App: React.FC = () => {
         if (event.state !== "complete") return;
         const geom = event.graphic?.geometry;
         if (!geom) return;
+        const activeLayer = layerRef.current;
+        if (!activeLayer) return;
 
         try {
-          const result = await layer.queryFeatures({
+          const result = await activeLayer.queryFeatures({
             geometry: geom,
             spatialRelationship: "intersects",
             returnGeometry: false,
-            outFields: [layer.objectIdField],
+            outFields: [activeLayer.objectIdField],
           });
           const oids = result.features.map(
-            (f) => f.attributes[layer.objectIdField] as number
+            (f) => f.attributes[activeLayer.objectIdField] as number
           );
-          view.selectionManager.replace(layer, oids);
+          view.selectionManager.replace(activeLayer, oids);
         } catch (err) {
           console.error("Selection query failed:", err);
         } finally {
@@ -210,7 +223,9 @@ const App: React.FC = () => {
       selHandleRef.current = view.selectionManager.on(
         "selection-change",
         async () => {
-          const sel = view.selectionManager.getSelection(layer) as number[] | undefined;
+          const activeLayer = layerRef.current;
+          if (!activeLayer) return;
+          const sel = view.selectionManager.getSelection(activeLayer) as number[] | undefined;
           if (!sel || sel.length === 0) {
             setSelectedFeatures((prev) => prev.length === 0 ? prev : []);
             setFilterBySelection((prev) => prev ? false : prev);
@@ -220,7 +235,7 @@ const App: React.FC = () => {
           setFilterBySelection((prev) => prev ? false : prev);
 
           try {
-            const result = await layer.queryFeatures({
+            const result = await activeLayer.queryFeatures({
               objectIds: sel,
               returnGeometry: true,
               outSpatialReference: view.spatialReference,
@@ -229,14 +244,14 @@ const App: React.FC = () => {
             const routes: SelectedRoute[] = result.features
               .filter((f) => f.geometry)
               .map((f) => ({
-                oid: f.attributes[layer.objectIdField] as number,
+                oid: f.attributes[activeLayer.objectIdField] as number,
                 geometry: f.geometry as Polyline,
-                label: f.attributes.RouteName ?? f.attributes.Name ?? `Route ${f.attributes[layer.objectIdField]}`,
+                label: f.attributes.RouteName ?? f.attributes.TRL_NAME ?? f.attributes.Name ?? f.attributes.description ?? `Route ${f.attributes[activeLayer.objectIdField]}`,
               }));
             setSelectedFeatures(routes);
             if (result.features.length > 0) {
               const extent = result.features[0].geometry
-                ? await layer.queryExtent({ objectIds: sel })
+                ? await activeLayer.queryExtent({ objectIds: sel })
                 : null;
               if (extent?.extent) {
                 view.goTo({ target: extent.extent.expand(1.2) }, { animate: true, duration: 800 });
