@@ -5,6 +5,7 @@ import esriConfig from "@arcgis/core/config";
 interface SignInModalProps {
   serverUrl: string;
   onSignIn: () => void;
+  onSkip: () => void;
 }
 
 function getServerRoot(url: string): string {
@@ -42,7 +43,7 @@ async function fetchToken(
   }
 }
 
-const SignInModal: React.FC<SignInModalProps> = ({ serverUrl, onSignIn }) => {
+const SignInModal: React.FC<SignInModalProps> = ({ serverUrl, onSignIn, onSkip }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -173,6 +174,15 @@ const SignInModal: React.FC<SignInModalProps> = ({ serverUrl, onSignIn }) => {
             disabled={loading || !username || !password}
           >
             {loading ? "Signing in..." : "Sign In"}
+          </button>
+
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={onSkip}
+            disabled={loading}
+          >
+            Skip — Explore Sample Data
           </button>
         </form>
       </div>

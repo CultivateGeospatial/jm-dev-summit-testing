@@ -27,6 +27,7 @@ import "@arcgis/map-components/components/arcgis-search/customElement";
 import "@arcgis/map-components/components/arcgis-editor/customElement";
 import "@arcgis/map-components/components/arcgis-feature-table/customElement";
 import "@arcgis/map-components/components/arcgis-elevation-profile/customElement";
+import "@arcgis/map-components/components/arcgis-bookmarks/customElement";
 
 import ReactDOM from "react-dom/client";
 import App from "./App";

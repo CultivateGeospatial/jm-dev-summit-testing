@@ -211,3 +211,24 @@ calcite-shell-panel[slot="panel-bottom"] {
   background: #93c0e0;
   cursor: not-allowed;
 }
+
+.btn-secondary {
+  padding: 10px 20px;
+  background: transparent;
+  color: #0079c1;
+  border: 1px solid #0079c1;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #f0f7fc;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -1,7 +1,5 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 import type { ArcgisElevationProfile as ArcgisElevationProfileElement } from "@arcgis/map-components/components/arcgis-elevation-profile/customElement";
-import { ArcgisElevationProfile } from "@arcgis/map-components-react";
-import { CalciteSelect, CalciteOption } from "@esri/calcite-components-react";
 import type Polyline from "@arcgis/core/geometry/Polyline";
 
 export interface SelectedRoute {
@@ -17,6 +15,7 @@ interface ElevationPanelProps {
 
 const ElevationPanel: React.FC<ElevationPanelProps> = ({ routes, mapElementId }) => {
   const elevRef = useRef<ArcgisElevationProfileElement | null>(null);
+  const selectRef = useRef<HTMLElement | null>(null);
   const [activeOid, setActiveOid] = useState<number | null>(null);
 
   // Pick the active route (fall back to first if activeOid no longer in list)
@@ -38,6 +37,20 @@ const ElevationPanel: React.FC<ElevationPanelProps> = ({ routes, mapElementId })
     }
   }, [activeRoute]);
 
+  // Attach calciteSelectChange event via DOM listener (React event props don't fire on web components)
+  const handleSelectChange = useCallback((e: Event) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const val = (e.target as any)?.value;
+    if (val) setActiveOid(Number(val));
+  }, []);
+
+  useEffect(() => {
+    const el = selectRef.current;
+    if (!el) return;
+    el.addEventListener("calciteSelectChange", handleSelectChange);
+    return () => el.removeEventListener("calciteSelectChange", handleSelectChange);
+  }, [handleSelectChange, routes.length > 1]);
+
   return (
     <div className="tab-content elevation-content">
       {routes.length === 0 && (
@@ -47,28 +60,24 @@ const ElevationPanel: React.FC<ElevationPanelProps> = ({ routes, mapElementId })
       )}
       {routes.length > 1 && (
         <div className="elevation-route-picker">
-          <CalciteSelect
+          <calcite-select
+            ref={selectRef}
             label="Choose route"
             scale="s"
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onCalciteSelectChange={(e: any) => {
-              const val = e.target?.value;
-              if (val) setActiveOid(Number(val));
-            }}
           >
             {routes.map((r) => (
-              <CalciteOption
+              <calcite-option
                 key={r.oid}
                 value={String(r.oid)}
                 selected={r.oid === activeRoute?.oid ? true : undefined}
               >
                 {r.label}
-              </CalciteOption>
+              </calcite-option>
             ))}
-          </CalciteSelect>
+          </calcite-select>
         </div>
       )}
-      <ArcgisElevationProfile
+      <arcgis-elevation-profile
         ref={elevRef}
         referenceElement={mapElementId}
         className="bottom-widget"
